@@ -58,7 +58,27 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void update(Seller obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PreparedStatement prst = null;
+        
+        try {
+            prst = con.prepareStatement("UPDATE seller "
+                    + "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? "
+                    + "WHERE Id = ?");
+            
+            prst.setString(1, obj.getName());
+            prst.setString(2, obj.getEmail());
+            prst.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+            prst.setDouble(4, obj.getBaseSalary());
+            prst.setInt(5, obj.getDepartment().getId());
+            prst.setInt(6, obj.getId());
+            
+            prst.executeUpdate();
+                        
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }finally{
+            DB.closeStatement(prst);
+        }
     }
 
     @Override
