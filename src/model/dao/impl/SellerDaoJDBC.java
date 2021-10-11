@@ -6,7 +6,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
@@ -69,6 +72,51 @@ public class SellerDaoJDBC implements SellerDao {
     public List<Seller> findAll() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    @Override
+    public List<Seller> findByDepartment(Department department) {
+        PreparedStatement prst = null;
+        ResultSet rs = null;
+
+        try {
+            prst = con.prepareStatement("SELECT seller.*, department.name as DepName FROM seller "
+                    + "INNER JOIN department "
+                    + "ON seller.DepartmentId = department.Id "
+                    + "WHERE DepartmentId = ? "
+                    + "ORDER BY Name;");
+
+            prst.setInt(1, department.getId());
+
+            rs = prst.executeQuery();
+            List<Seller> list = new ArrayList<>();
+            Map<Integer, Department> map = new HashMap<>();
+            
+            while (rs.next()) { //se tiver algum dado no resultSet.
+                
+                Department dep = map.get(rs.getInt("DepartmentId"));
+                
+                if (dep == null){
+                    dep = instantiateDepartment(rs);
+                    map.put(rs.getInt("DepartmentId"), dep);
+                }
+                
+                Seller obj = instantiateSeller(rs, dep);
+                list.add(obj);
+            }
+            
+            return list; //caso não tiver retorna nullo.
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(prst);
+            DB.closeResulSet(rs);
+        }
+        
+    }
+    
+    
+    
 
     private Department instantiateDepartment(ResultSet rs) throws SQLException {
         Department dep = new Department();
@@ -87,5 +135,7 @@ public class SellerDaoJDBC implements SellerDao {
         obj.setDepartment(dep);
         return obj;
     }
+
+    
 
 }
