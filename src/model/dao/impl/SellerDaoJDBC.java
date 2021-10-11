@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,35 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void insert(Seller obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PreparedStatement prst = null;
+        
+        try {
+            prst = con.prepareStatement("INSERT INTO seller (Name, Email, BirthDate, BaseSalary, DepartmentId) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            
+            prst.setString(1, obj.getName());
+            prst.setString(2, obj.getEmail());
+            prst.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+            prst.setDouble(4, obj.getBaseSalary());
+            prst.setInt(5, obj.getDepartment().getId());
+            
+            int rowsAffected = prst.executeUpdate();
+            
+            if(rowsAffected > 0){
+                ResultSet rs = prst.getGeneratedKeys();
+                if(rs.next()){
+                    int id = rs.getInt(1);
+                    obj.setId(id);
+                }
+                DB.closeResulSet(rs);
+            }else{
+                throw new DbException("Unexpected error! No rows affected!");
+            }
+            
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }finally{
+            DB.closeStatement(prst);
+        }
     }
 
     @Override
