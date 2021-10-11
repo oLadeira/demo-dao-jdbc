@@ -5,7 +5,6 @@ import model.dao.impl.SellerDaoJDBC;
 
 //A classe DaoFactory serve para auxiliar na instanciação dos métodos 
 
-
 public class DaoFactory {
 
     public static SellerDao createSellerDao(){ //método que retorna o tipo da INTERFACE 
