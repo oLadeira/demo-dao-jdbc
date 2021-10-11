@@ -83,7 +83,25 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void deleteById(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PreparedStatement prst = null;
+        
+        try {
+            prst = con.prepareStatement("DELETE FROM seller "
+                    + "WHERE Id = ?");
+            
+            prst.setInt(1, id);
+            
+            int rowsAffected = prst.executeUpdate();
+            
+            if(rowsAffected == 0){
+                throw new DbException("ERROR - User not found!");
+            }
+            
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }finally{
+            DB.closeStatement(prst);
+        }
     }
 
     @Override
@@ -197,8 +215,6 @@ public class SellerDaoJDBC implements SellerDao {
         }
         
     }
-    
-    
     
 
     private Department instantiateDepartment(ResultSet rs) throws SQLException {
