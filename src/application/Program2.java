@@ -9,17 +9,22 @@ public class Program2 {
     
     public static void main(String[] args) {
         
-        System.out.println("==== TEST 1 : Insert Department");
         DepartmentDao departmentDao = DaoFactory.createDepartmentDao();
         
-        Department department = new Department(null, "Marketing");
+        /*
+        System.out.println("==== TEST 1 : Insert Department");
+        
+        
+        Department department = new Department(null, "Finances");
         
         departmentDao.insert(department);
         System.out.println("Insert successful! New department id: " + department.getId());
-        
+        */
         
         System.out.println("==== TEST 2 : Update Department");
-        
+        Department department = departmentDao.findById(6);
+        department.setName("Finances");
+        departmentDao.update(department);
     }
     
     

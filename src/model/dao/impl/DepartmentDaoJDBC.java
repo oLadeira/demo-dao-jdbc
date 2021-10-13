@@ -56,10 +56,10 @@ public class DepartmentDaoJDBC implements DepartmentDao{
         PreparedStatement prst = null;
         
         try {
-            prst = con.prepareStatement("UPDATE department SET Id = ?, Name = ?");
+            prst = con.prepareStatement("UPDATE department SET Name = ? WHERE id = ?");
             
-            prst.setInt(1, obj.getId());
-            prst.setString(2, obj.getName());
+            prst.setString(1, obj.getName());
+            prst.setInt(2, obj.getId());
             
             prst.executeUpdate();
             
