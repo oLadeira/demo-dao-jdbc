@@ -7,7 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.dao.DepartmentDao;
 import model.entities.Department;
 
@@ -118,6 +121,32 @@ public class DepartmentDaoJDBC implements DepartmentDao{
 
     @Override
     public List<Department> findAll() {
+        PreparedStatement prst = null;
+        ResultSet rs = null;
+
+        try {
+            prst = con.prepareStatement("SELECT * FROM department");
+            
+            rs = prst.executeQuery();
+            
+            List<Department> list = new ArrayList<>();
+            Map<Integer, Department> map = new HashMap<>();
+            
+            while(rs.next()){
+                Department dep = new Department();
+                
+                dep = instantiateDepartment(rs);
+                
+                list.add(dep);
+            }
+            return list;
+            
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }finally{
+            DB.closeStatement(prst);
+            DB.closeResulSet(rs);
+        }
     }
 
     
